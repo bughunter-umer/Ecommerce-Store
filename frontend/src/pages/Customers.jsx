@@ -21,8 +21,8 @@ export default function Customers() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-3">Customers</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <h2 className="text-xl font-bold mb-3">Customers</h2>
+      <div className="grid grid-cols-1 ">
         <div className="bg-white p-4 rounded shadow">
           <form onSubmit={submit} className="space-y-2">
             <input value={form.name} onChange={(e)=>setForm({...form,name:e.target.value})} placeholder="Name" className="w-full p-2 border rounded" />

@@ -15,7 +15,7 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-bold">Ecommerce-Dashboard</h1>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 border rounded">Products: <strong>{products.length}</strong></div>
         <div className="p-4 border rounded">Orders: <strong>{orders.length}</strong></div>

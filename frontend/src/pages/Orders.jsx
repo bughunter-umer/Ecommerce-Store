@@ -12,9 +12,9 @@ export default function Orders() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Orders</h2>
+      <h2 className="text-2xl font-bold mb-4">Orders</h2>
       <div className="bg-white p-4 shadow rounded">
-        <table className="w-full text-left">
+        <table className="text-left">
           <thead>
             <tr className="text-sm text-slate-600">
               <th className="py-2">Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Created</th>
