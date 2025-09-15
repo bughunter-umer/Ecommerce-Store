@@ -1,19 +1,15 @@
 import pkg from 'pg';
 const { Pool } = pkg;
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = new Pool({
-  user: process.env.PGUSER || 'postgres',
-  host: process.env.PGHOST || 'localhost',
-  database: process.env.PGDATABASE || 'ecommerce_store',
-  password: process.env.PGPASSWORD || 'postgres',
-  port: process.env.PGPORT ? parseInt(process.env.PGPORT) : 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
-pool.on('error', (err) => {
-  console.error('Unexpected PG error', err);
-});
-
-export default {
-  query: (text, params) => pool.query(text, params),
-  pool,
-};
+export default pool;

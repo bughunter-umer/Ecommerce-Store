@@ -12,9 +12,18 @@ async function getAll(req, res) {
 
 async function create(req, res) {
   try {
-    const { name, email } = req.body;
-    const q = `INSERT INTO customers (name,email) VALUES ($1,$2) RETURNING *`;
-    const { rows } = await db.query(q, [name, email]);
+    const { name, email, phone, address, password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
+    }
+
+    const q = `
+      INSERT INTO customers (name, email, phone, address, password) 
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `;
+    const { rows } = await db.query(q, [name, email, phone, address, password]);
+
     res.status(201).json(rows[0]);
   } catch (err) {
     console.error(err);
