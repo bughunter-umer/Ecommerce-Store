@@ -1,110 +1,126 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Products from "./pages/Products";
-import Orders from "./pages/Orders";
-import Customers from "./pages/Customers";
-import Reports from "./pages/Reports";
-import Users from "./pages/Users";
 import Login from "./pages/Login";
-import Navbar from "./components/Navbar"; // Import your Navbar component
+import ProductPage from "./pages/ProductPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminOrders from "./pages/admin/AdminOrders";
+import { useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProduct from "./pages/admin/AdminProducts";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminReport from "./pages/admin/AdminReport";
+import OrdersPage from "./pages/OrdersPage";
 
-// ProtectedRoute component
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("token");
-  if (!token) return <Navigate to="/login" replace />;
-  return children;
-}
+function App() {
+  const { user, loading } = useAuth();
 
-// Layout for protected pages with Navbar
-function ProtectedLayout({ children }) {
+  if (loading) {
+    return <p className="text-center mt-10 text-gray-500">Loading...</p>;
+  }
+
   return (
-    <>
-      <Navbar /> {/* Render Navbar only for protected pages */}
-      <div className="max-w-7xl mx-auto p-4">{children}</div>
-    </>
-  );
-}
-
-// Main App
-export default function App() {
-  return (
-    <BrowserRouter>
+    
       <Routes>
-        {/* Default root */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Redirect / to /login */}
+        <Route path="/" element={<Navigate to="/login" />} />
 
-        {/* Login page */}
-        <Route path="/login" element={<Login />} />
-
-        {/* Protected routes */}
+        {/* Public login route */}
         <Route
-          path="/dashboard"
+          path="/login"
           element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <Dashboard />
-              </ProtectedLayout>
+            <Login />
+            // loading ? (
+            //   <p>Loading...</p>
+            // ) : !user ? (
+            //   <Login />
+            // ) : (
+            //   <Navigate
+            //     to={user.role === "admin" ? "/admin/dashboard" : "/userorders"}
+            //     replace
+            //   />
+            // )
+          }
+        />
+
+        {/* Admin routes */}
+        {/* Admin routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminProduct/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/customers"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminCustomers/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminReport />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* User routes */}
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute role="user">
+              <OrdersPage/>
             </ProtectedRoute>
           }
         />
         <Route
           path="/products"
           element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <Products />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <Orders />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/customers"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <Customers />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <Users />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <Reports />
-              </ProtectedLayout>
+            <ProtectedRoute role="user">
+              <ProductPage />
             </ProtectedRoute>
           }
         />
 
-        {/* 404 */}
+        {/* Catch-all 404 */}
         <Route
           path="*"
-          element={<p className="text-center mt-10">404 Page Not Found</p>}
+          element={
+            <p className="text-center mt-10 text-red-500">404 Page Not Found</p>
+          }
         />
       </Routes>
-    </BrowserRouter>
   );
 }
+
+export default App;
