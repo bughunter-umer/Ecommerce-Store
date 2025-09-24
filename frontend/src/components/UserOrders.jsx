@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrders, saveOrder, deleteOrder } from "../redux/orderSlice";
+import { fetchOrders } from "../redux/orderSlice";
 import API from "../api";
 
 export default function UserOrders() {
@@ -41,7 +41,7 @@ export default function UserOrders() {
     fetchProducts();
   }, []);
 
-  // Open modal for edit or add
+  // Open modal
   const openModal = (order = null) => {
     if (order) {
       setEditing(order);
@@ -66,7 +66,7 @@ export default function UserOrders() {
     setOpen(true);
   };
 
-  // Save order (Add / Edit)
+  // Save order
   const handleSave = async () => {
     const { name, email, address, productId, quantity } = form;
     if (!name || !email || !address || !productId || !quantity)
@@ -81,12 +81,7 @@ export default function UserOrders() {
       email,
       address,
       total: product.price * Number(quantity),
-      items: [
-        {
-          productId: Number(productId),
-          qty: Number(quantity),
-        },
-      ],
+      items: [{ productId: Number(productId), qty: Number(quantity) }],
     };
 
     try {
@@ -95,7 +90,7 @@ export default function UserOrders() {
       } else {
         await API.post("/orders", payload);
       }
-      dispatch(fetchOrders()); // refresh orders
+      dispatch(fetchOrders());
       setOpen(false);
       alert("Order saved successfully!");
     } catch (err) {
@@ -117,30 +112,34 @@ export default function UserOrders() {
     }
   };
 
-  // Show only current user's orders by matching email
   const userOrders = orders.filter(
     (o) => o.email.toLowerCase() === (user.email || "").toLowerCase()
   );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">My Orders</h1>
+    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-xl md:text-2xl font-bold mb-4 text-center md:text-left">
+        My Orders
+      </h1>
 
-      <button
-        onClick={() => openModal()}
-        className="mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
-      >
-        Add Order
-      </button>
+      <div className="flex justify-center md:justify-start mb-4">
+        <button
+          onClick={() => openModal()}
+          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 w-full md:w-auto"
+        >
+          Add Order
+        </button>
+      </div>
 
+      {/* Responsive table wrapper */}
       <div className="overflow-x-auto">
-        <table className="w-full table-auto border-collapse border border-gray-300">
-          <thead className="bg-gray-200">
+        <table className="w-full min-w-[500px] table-auto border-collapse border border-gray-300 text-sm md:text-base">
+          <thead className="bg-gray-200 text-gray-700">
             <tr>
-              <th className="border px-4 py-2">Product</th>
-              <th className="border px-4 py-2">Quantity</th>
-              <th className="border px-4 py-2">Total</th>
-              <th className="border px-4 py-2">Actions</th>
+              <th className="border px-3 md:px-4 py-2">Product</th>
+              <th className="border px-3 md:px-4 py-2">Quantity</th>
+              <th className="border px-3 md:px-4 py-2">Total</th>
+              <th className="border px-3 md:px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -168,20 +167,22 @@ export default function UserOrders() {
               userOrders.map((o) => {
                 const item = o.items[0] || {};
                 return (
-                  <tr key={o.id}>
-                    <td className="border px-4 py-2">{item.title}</td>
-                    <td className="border px-4 py-2">{item.qty}</td>
-                    <td className="border px-4 py-2">${o.total.toFixed(2)}</td>
-                    <td className="border px-4 py-2 flex gap-2">
+                  <tr key={o.id} className="text-center">
+                    <td className="border px-3 md:px-4 py-2">{item.title}</td>
+                    <td className="border px-3 md:px-4 py-2">{item.qty}</td>
+                    <td className="border px-3 md:px-4 py-2">
+                      ${o.total.toFixed(2)}
+                    </td>
+                    <td className="border px-3 md:px-4 py-2 flex flex-col md:flex-row justify-center gap-2">
                       <button
                         onClick={() => openModal(o)}
-                        className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-400"
+                        className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-400"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(o.id)}
-                        className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500"
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500"
                       >
                         Delete
                       </button>
@@ -194,62 +195,84 @@ export default function UserOrders() {
         </table>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* Modal */}
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded w-96">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-6 rounded w-full max-w-md shadow-lg">
+            <h2 className="text-lg md:text-xl font-bold mb-4 text-center">
               {editing ? "Edit Order" : "Add Order"}
             </h2>
 
-            <label className="block mb-2">Name:</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+            <div className="space-y-3">
+              <div>
+                <label className="block mb-1 text-sm">Name</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) =>
+                    setForm({ ...form, name: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-sm"
+                />
+              </div>
 
-            <label className="block mb-2">Email:</label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+              <div>
+                <label className="block mb-1 text-sm">Email</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm({ ...form, email: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-sm"
+                />
+              </div>
 
-            <label className="block mb-2">Address:</label>
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+              <div>
+                <label className="block mb-1 text-sm">Address</label>
+                <input
+                  type="text"
+                  value={form.address}
+                  onChange={(e) =>
+                    setForm({ ...form, address: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-sm"
+                />
+              </div>
 
-            <label className="block mb-2">Product:</label>
-            <select
-              value={form.productId}
-              onChange={(e) => setForm({ ...form, productId: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            >
-              <option value="">Select Product</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} - ${p.price}
-                </option>
-              ))}
-            </select>
+              <div>
+                <label className="block mb-1 text-sm">Product</label>
+                <select
+                  value={form.productId}
+                  onChange={(e) =>
+                    setForm({ ...form, productId: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-sm"
+                >
+                  <option value="">Select Product</option>
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} - ${p.price}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <label className="block mb-2">Quantity:</label>
-            <input
-              type="number"
-              min="1"
-              value={form.quantity}
-              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+              <div>
+                <label className="block mb-1 text-sm">Quantity</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={form.quantity}
+                  onChange={(e) =>
+                    setForm({ ...form, quantity: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-sm"
+                />
+              </div>
+            </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col md:flex-row justify-end gap-2 mt-4">
               <button
                 onClick={() => setOpen(false)}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-200"

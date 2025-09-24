@@ -1,3 +1,4 @@
+// src/pages/UserProducts.jsx
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import API from "../api"; // Axios instance
@@ -80,21 +81,23 @@ export default function UserProducts() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Products</h1>
+    <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-xl sm:text-2xl font-bold mb-6 text-center sm:text-left">
+        Products
+      </h1>
 
       {loading ? (
-        <div className="text-center py-4">Loading...</div>
+        <div className="text-center py-6">Loading...</div>
       ) : error ? (
-        <div className="text-center py-4 text-red-500">{error}</div>
+        <div className="text-center py-6 text-red-500">{error}</div>
       ) : products.length === 0 ? (
-        <div className="text-center py-4">No products found</div>
+        <div className="text-center py-6">No products found</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {products.map((p) => (
             <div
               key={p.id}
-              className="bg-white p-4 rounded shadow hover:shadow-lg transition flex flex-col justify-between"
+              className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between"
             >
               <div>
                 <h2 className="text-lg font-semibold mb-2">{p.name}</h2>
@@ -105,7 +108,7 @@ export default function UserProducts() {
               </div>
               <button
                 onClick={() => openModal(p)}
-                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 w-full sm:w-auto"
               >
                 Buy Now
               </button>
@@ -115,56 +118,74 @@ export default function UserProducts() {
       )}
 
       {/* Buy Now Modal */}
-      {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded w-96">
-            <h2 className="text-xl font-bold mb-4">Buy {selectedProduct.name}</h2>
+      {open && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">
+              Buy {selectedProduct.name}
+            </h2>
 
-            <label className="block mb-2">Name:</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+            {/* Form Fields */}
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-1 text-sm font-medium">Name:</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
 
-            <label className="block mb-2">Email:</label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+              <div>
+                <label className="block mb-1 text-sm font-medium">Email:</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
 
-            <label className="block mb-2">Address:</label>
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              className="w-full mb-4 p-2 border rounded"
-            />
+              <div>
+                <label className="block mb-1 text-sm font-medium">
+                  Address:
+                </label>
+                <input
+                  type="text"
+                  value={form.address}
+                  onChange={(e) => setForm({ ...form, address: e.target.value })}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
 
-            <label className="block mb-2">Quantity:</label>
-            <input
-              type="number"
-              min={1}
-              value={form.quantity}
-              onChange={(e) =>
-                setForm({ ...form, quantity: e.target.value })
-              }
-              className="w-full mb-4 p-2 border rounded"
-            />
+              <div>
+                <label className="block mb-1 text-sm font-medium">
+                  Quantity:
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  value={form.quantity}
+                  onChange={(e) =>
+                    setForm({ ...form, quantity: e.target.value })
+                  }
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+            </div>
 
-            <div className="flex justify-end gap-2">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
               <button
                 onClick={() => setOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-200"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-200 w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBuy}
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 w-full sm:w-auto"
               >
                 Buy Now
               </button>
